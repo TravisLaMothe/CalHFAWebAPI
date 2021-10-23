@@ -29,7 +29,7 @@ namespace WebApplication3.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public JsonResult Get([FromQuery]int statusCode)
+        public JsonResult Get(int statusCode)
         {
             DataTable table = new DataTable();
 
