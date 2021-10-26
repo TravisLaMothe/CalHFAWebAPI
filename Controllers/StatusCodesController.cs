@@ -2,7 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 
-namespace WebApplication3.Controllers
+namespace CalHFAWebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
