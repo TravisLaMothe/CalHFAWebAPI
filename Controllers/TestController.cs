@@ -18,6 +18,7 @@ namespace CalHFAWebAPI.Controllers
             var StatusCodes = new SortedDictionary<int, int>();
             var StatusDates = new Dictionary<int, DateTime>();
             var LoanTypeCategories = new Dictionary<int, int>();
+            var Loans = new Dictionary<int, int>();
 
             using (SqlConnection connection = DatabaseConnection.GetConnection())
             {
@@ -35,6 +36,18 @@ namespace CalHFAWebAPI.Controllers
                     }
                 }
 
+                using (SqlCommand query = new SqlCommand("SELECT LoanId, LoanTypeID FROM Loan", connection))
+                {
+                    SqlDataReader results = query.ExecuteReader();
+
+                    while (results.Read())
+                    {
+                        int LoanID = results.GetInt32(results.GetOrdinal("LoanId"));
+                        int LoanTypeID = results.GetInt32(results.GetOrdinal("LoanTypeID"));
+                        Loans.Add(LoanID, LoanTypeID);
+                    }
+                }
+
                 using (SqlCommand query = new SqlCommand("SELECT a.LoanId, a.StatusCode, a.StatusSequence, a.StatusDate "
                                                             + "FROM LoanStatus a "
                                                             + "LEFT OUTER JOIN LoanStatus b "
@@ -46,27 +59,19 @@ namespace CalHFAWebAPI.Controllers
                     while (results.Read())
                     {
                         DateTime StatusDate = results.GetDateTime(results.GetOrdinal("StatusDate"));
-
                         int StatusCode = results.GetInt32(results.GetOrdinal("StatusCode"));
                         int LoanId = results.GetInt32(results.GetOrdinal("LoanId"));
+
+
                         bool continueLoan = false;
-
-                        using (SqlCommand query2 = new SqlCommand("SELECT LoanTypeID FROM Loan WHERE LoanID = @LoanID", connection))
+                        if (Loans.TryGetValue(LoanId, out var LoanTypeID))
                         {
-                            query2.Parameters.AddWithValue("@LoanID", LoanId);
-                            SqlDataReader results2 = query2.ExecuteReader();
-
-                            if (results2.Read())
+                            if (LoanTypeCategories.TryGetValue(LoanTypeID, out var LoanCategory))
                             {
-                                int LoanTypeID = results2.GetInt32(results2.GetOrdinal("LoanTypeID"));
-                                int LoanCategory = 0;
-                                if (LoanTypeCategories.TryGetValue(LoanTypeID, out LoanCategory))
-                                {
-                                    if ((StatusCode == 510 || StatusCode == 522) && LoanCategory == 2)
-                                        continueLoan = true;
-                                    if ((StatusCode == 410 || StatusCode == 422) && LoanCategory == 1)
-                                        continueLoan = true;
-                                }
+                                if ((StatusCode == 510 || StatusCode == 522) && LoanCategory == 2)
+                                    continueLoan = true;
+                                if ((StatusCode == 410 || StatusCode == 422) && LoanCategory == 1)
+                                    continueLoan = true;
                             }
                         }
 
@@ -101,6 +106,7 @@ namespace CalHFAWebAPI.Controllers
                                     }
                                     break;
                                 default:
+                                    Debug.WriteLine("Test????");
                                     break;
                             }
                         }
