@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 
@@ -54,7 +55,11 @@ namespace CalHFAWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseDefaultFiles();
+           
+            app.UseDefaultFiles(new DefaultFilesOptions()
+            {
+                DefaultFileNames = new List<string>() { "Test.html" }
+            });
             app.UseStaticFiles();
 
             app.UseHttpsRedirection(); // Added
