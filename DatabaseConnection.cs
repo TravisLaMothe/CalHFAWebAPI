@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 
-namespace WebApplication3
+namespace CalHFAWebAPI
 {
     public class DatabaseConnection
     {
