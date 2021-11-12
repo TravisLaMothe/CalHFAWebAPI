@@ -1,0 +1,53 @@
+﻿/*  
+    Highlights button/tab of current page;
+
+    Each page must have a unique id in the body tag.
+    All top level and lower level site navigation tabs must have unique id.
+
+    example: 
+    html    <body id="longpagename">
+            <a href="/" id="shortpagename">
+    
+    css     #longpagename #shortpagename,
+            #nextlongname #nextshortname,
+            etc...                      
+    {
+        class property settings...
+    }
+
+
+*/
+
+
+/* top navigation */
+#calhfahome #home,
+#aboutus #about,
+#contactus #contact {
+    color: #fff;
+    background-color: transparent;
+    border-color: #FFF;
+}
+
+
+/* second level navigation tabsl */
+#tab1 #tab1on,
+#tab2 #tab2on,
+#tab3 #tab3on, 
+#tab4 #tab4on,
+#tab5 #tab5on, 
+#tab6 #tab6on,
+#tab7 #tab7on{
+    border-top-color: #3f4f5f;
+    border-bottom-color: #3f4f5f;
+    background-color: #FFF;
+    color: #3f4f5f;
+}
+
+.nobold {
+	font-weight: normal !important;
+}
+
+
+
+
+

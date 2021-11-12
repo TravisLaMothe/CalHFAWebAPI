@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using System.IO;
 using System.Net;
 
 namespace CalHFAWebAPI
@@ -52,6 +54,8 @@ namespace CalHFAWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.UseHttpsRedirection(); // Added
             app.UseRouting();
