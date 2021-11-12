@@ -7,13 +7,13 @@ namespace WebApplication3
     {
 
 
-        public static readonly String DB_DATABASE_NAME = "CISC131";
-        public static readonly String DB_HOST_NAME = "localhost";
+        public static readonly String DB_DATABASE_NAME = "CSC131";
+        public static readonly String DB_HOST_NAME = "calhfawebapi.database.windows.net";
         public static readonly String DB_ACCESS_TYPE = "tcp";
         public static readonly int DB_PORT = 1433;
         public static readonly String DB_DATA_SOURCE = "" + DB_ACCESS_TYPE + ":" + DB_HOST_NAME + ", " + DB_PORT;
-        public static readonly String DB_USER = "travis";
-        public static readonly String DB_PASS = "CISCProjectTest";
+        public static readonly String DB_USER = "dummyreader";
+        public static readonly String DB_PASS = "Dummytest123";
 
         public static readonly String DB_CONNECTION_STRING =
             new SqlConnectionStringBuilder()
@@ -21,7 +21,8 @@ namespace WebApplication3
                 DataSource = DB_DATA_SOURCE,
                 InitialCatalog = DB_DATABASE_NAME,
                 UserID = DB_USER,
-                Password = DB_PASS
+                Password = DB_PASS,
+                MultipleActiveResultSets = true
             }.ConnectionString;
 
         /// <summary>
