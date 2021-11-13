@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace CalHFAWebAPI
 {
@@ -8,9 +10,9 @@ namespace CalHFAWebAPI
 
 
         public static readonly String DB_DATABASE_NAME = "CSC131";
-        public static readonly String DB_HOST_NAME = "calhfawebapi.database.windows.net";
+        public static readonly String DB_HOST_NAME = "csc131project.mysql.database.azure.com";
         public static readonly String DB_ACCESS_TYPE = "tcp";
-        public static readonly int DB_PORT = 1433;
+        public static readonly int DB_PORT = 3306;
         public static readonly String DB_DATA_SOURCE = "" + DB_ACCESS_TYPE + ":" + DB_HOST_NAME + ", " + DB_PORT;
         public static readonly String DB_USER = "dummyreader";
         public static readonly String DB_PASS = "Dummytest123";
@@ -21,8 +23,8 @@ namespace CalHFAWebAPI
                 DataSource = DB_DATA_SOURCE,
                 InitialCatalog = DB_DATABASE_NAME,
                 UserID = DB_USER,
-                Password = DB_PASS,
-                MultipleActiveResultSets = true
+                Password = DB_PASS/*,
+                MultipleActiveResultSets = true*/
             }.ConnectionString;
 
         /// <summary>
@@ -34,9 +36,9 @@ namespace CalHFAWebAPI
         /// <exception cref="SqlException">
         ///     Unable to open a valid Sql Connection to the database.
         /// </exception>
-        public static SqlConnection GetConnection()
+        public static MySqlConnection GetConnection()
         {
-            var connection = new SqlConnection(DB_CONNECTION_STRING);
+            var connection = new MySqlConnection("server=csc131project.mysql.database.azure.com;port=3306;database=CSC131;user=dummyreader;password=Dummytest123");
             connection.Open();
             return connection;
         }

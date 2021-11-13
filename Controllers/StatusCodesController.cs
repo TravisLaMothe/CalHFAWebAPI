@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -14,9 +15,9 @@ namespace CalHFAWebAPI.Controllers
         {
             DataTable table = new DataTable();
 
-            using (SqlConnection connection = DatabaseConnection.GetConnection())
+            using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
-                using (SqlCommand query = new SqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode", connection))
+                using (MySqlCommand query = new MySqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode", connection))
                 {
 
                     var results = query.ExecuteReader();
@@ -33,9 +34,9 @@ namespace CalHFAWebAPI.Controllers
         {
             DataTable table = new DataTable();
 
-            using (SqlConnection connection = DatabaseConnection.GetConnection())
+            using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
-                using (SqlCommand query = new SqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode WHERE StatusCode = @StatusCode", connection))
+                using (MySqlCommand query = new MySqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode WHERE StatusCode = @StatusCode", connection))
                 {
                     query.Parameters.AddWithValue("@StatusCode", statusCode);
                     var results = query.ExecuteReader();

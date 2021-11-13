@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 
@@ -20,12 +20,12 @@ namespace CalHFAWebAPI.Controllers
             var LoanTypeCategories = new Dictionary<int, int>();
             var Loans = new Dictionary<int, int>();
 
-            using (SqlConnection connection = DatabaseConnection.GetConnection())
+            using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
                 // Stack categories
-                using (SqlCommand query = new SqlCommand("SELECT LoanTypeID, LoanCategoryID FROM LoanType", connection))
+                using (MySqlCommand query = new MySqlCommand("SELECT LoanTypeID, LoanCategoryID FROM LoanType", connection))
                 {
-                    SqlDataReader results = query.ExecuteReader();
+                    MySqlDataReader results = query.ExecuteReader();
 
                     while (results.Read())
                     {
@@ -34,11 +34,11 @@ namespace CalHFAWebAPI.Controllers
 
                         LoanTypeCategories.Add(LoanTypeID, LoanCategoryID);
                     }
-                }
 
-                using (SqlCommand query = new SqlCommand("SELECT LoanId, LoanTypeID FROM Loan", connection))
-                {
-                    SqlDataReader results = query.ExecuteReader();
+                    results.Close();
+
+                    query.CommandText = "SELECT LoanId, LoanTypeID FROM Loan";
+                    results = query.ExecuteReader();
 
                     while (results.Read())
                     {
@@ -46,15 +46,15 @@ namespace CalHFAWebAPI.Controllers
                         int LoanTypeID = results.GetInt32(results.GetOrdinal("LoanTypeID"));
                         Loans.Add(LoanID, LoanTypeID);
                     }
-                }
 
-                using (SqlCommand query = new SqlCommand("SELECT a.LoanId, a.StatusCode, a.StatusSequence, a.StatusDate "
+                    results.Close();
+
+                    query.CommandText = "SELECT a.LoanId, a.StatusCode, a.StatusSequence, a.StatusDate "
                                                             + "FROM LoanStatus a "
                                                             + "LEFT OUTER JOIN LoanStatus b "
                                                                 + "ON a.LoanId = b.LoanId AND a.StatusSequence < b.StatusSequence "
-                                                           + "WHERE b.LoanId IS NULL; ", connection))
-                {
-                    SqlDataReader results = query.ExecuteReader();
+                                                           + "WHERE b.LoanId IS NULL; ";
+                    results = query.ExecuteReader();
 
                     while (results.Read())
                     {
@@ -75,7 +75,7 @@ namespace CalHFAWebAPI.Controllers
                             }
                         }
 
-                        if (continueLoan) 
+                        if (continueLoan)
                         {
 
                             if (StatusDates.ContainsKey(StatusCode))
