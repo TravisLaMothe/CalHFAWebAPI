@@ -387,7 +387,7 @@ document.getElementById("datetime").innerHTML = dt.toLocaleDateString();
 			<td id="SuspenseDate" class="text-center"></td>
 		</tr>
         <script >
-            $.getJSON('https://calhfaapi.azurewebsites.net/api/test', function(data) {
+            $.getJSON('https://calhfaapi.azurewebsites.net/api/closingloans', function(data) {
                 $("#ComplianceLoansInLine")[0].innerHTML = data[0].Count;
                 var date = new Date(data[0].Date.replaceAll("-", "/"));
                 var options = {  month: 'short', day: 'numeric', /*year: 'numeric'*/ };
@@ -427,7 +427,7 @@ document.getElementById("datetime").innerHTML = dt.toLocaleDateString();
 		</tr>
 
         <script >
-            $.getJSON('https://calhfaapi.azurewebsites.net/api/Test', function(data) {
+            $.getJSON('https://calhfaapi.azurewebsites.net/api/closingloans', function(data) {
                 $("#PostClosingLoansInLine")[0].innerHTML = data[2].Count;
                 var date = new Date(data[2].Date.replaceAll("-", "/"));
                 var options = {  month: 'short', day: 'numeric' };
