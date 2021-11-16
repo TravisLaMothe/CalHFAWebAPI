@@ -2,11 +2,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 
 namespace CalHFAWebAPI
@@ -27,7 +25,7 @@ namespace CalHFAWebAPI
             services.AddCors(c =>
             { // Added
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            }); 
+            });
 
             //JSON Serializer
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
@@ -41,8 +39,10 @@ namespace CalHFAWebAPI
                 options.HttpsPort = 44342;
             });
 
+           
             services.AddControllers();
-
+            services.AddSwaggerGen();
+            services.AddSwaggerGenNewtonsoftSupport();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +55,9 @@ namespace CalHFAWebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-           
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             app.UseDefaultFiles(new DefaultFilesOptions()
             {
                 DefaultFileNames = new List<string>() { "Test.html" }

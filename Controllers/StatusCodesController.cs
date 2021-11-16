@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using System.Data;
-using System.Data.SqlClient;
 
 namespace CalHFAWebAPI.Controllers
 {
@@ -9,36 +8,25 @@ namespace CalHFAWebAPI.Controllers
     [ApiController]
     public class StatusCodesController : ControllerBase
     {
-
         [HttpGet]
-        public JsonResult Get()
-        {
-            DataTable table = new DataTable();
-
-            using (MySqlConnection connection = DatabaseConnection.GetConnection())
-            {
-                using (MySqlCommand query = new MySqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode", connection))
-                {
-
-                    var results = query.ExecuteReader();
-
-                    table.Load(results);
-                }
-            }
-
-            return new JsonResult(table);
-        }
-
-        [HttpGet("{id:int}")]
         public JsonResult Get(int statusCode)
         {
             DataTable table = new DataTable();
 
             using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
-                using (MySqlCommand query = new MySqlCommand("SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode WHERE StatusCode = @StatusCode", connection))
+                string command = "SELECT StatusCode, Description, BusinessUnit, NotesAndAssumptions, ConversationCategoryID FROM StatusCode";
+                if (statusCode > 0)
                 {
-                    query.Parameters.AddWithValue("@StatusCode", statusCode);
+                    command += " WHERE StatusCode = @StatusCode";
+                }
+                using (MySqlCommand query = new MySqlCommand(command, connection))
+                {
+                    if (statusCode > 0)
+                    {
+                        query.Parameters.AddWithValue("@StatusCode", statusCode);
+                    }
+
                     var results = query.ExecuteReader();
 
                     table.Load(results);
