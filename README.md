@@ -53,6 +53,18 @@ The code can be forked from this GitHub and tested on local environments connect
 ### Switching From Our Data To Live Data
 Once tested if wanted, changing the database connection values in /constants/DatabaseConstants.cs will allow redirection to the live SQL Server. Code may need to be altered to allow connection to SQL Server.
 
+### Example of API Consumption
+            $.getJSON('https://calhfaapi.azurewebsites.net/api/closingloans', function(data) {
+                $("#ComplianceLoansInLine")[0].innerHTML = data[0].Count;
+                var date = new Date(data[0].Date.replaceAll("-", "/"));
+                var options = {  month: 'short', day: 'numeric', /*year: 'numeric'*/ };
+                $("#ComplianceDate")[0].innerHTML = date.toLocaleString("en-US", options);
+
+                $("#SuspenseLoansInLine")[0].innerHTML = data[1].Count;
+                date = new Date(data[1].Date.replaceAll("-", "/"));
+                $("#SuspenseDate")[0].innerHTML = date.toLocaleString("en-US", options);
+            });
+
 
 ## Authors
 
