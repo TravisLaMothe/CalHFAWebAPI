@@ -1,7 +1,7 @@
-﻿using MySqlConnector;
+﻿using CalHFAWebAPI.Constants;
+using MySqlConnector;
 using System;
-using System.Data.SqlClient;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace CalHFAWebAPI
 {
@@ -18,9 +18,35 @@ namespace CalHFAWebAPI
         /// </exception>
         public static MySqlConnection GetConnection()
         {
-            var connection = new MySqlConnection("server=csc131project.mysql.database.azure.com;port=3306;database=CSC131;user=dummyreader;password=Dummytest123");
+            String connectionURL =  "server=" + DatabaseConstants.DATABASE_IP + ";" +
+                                    "port=" + DatabaseConstants.DATABASE_PORT + ";" +
+                                    "database=" + DatabaseConstants.DATABASE_SCHEMA + ";" +
+                                    "user=" + DatabaseConstants.DATABASE_USERNAME + ";" +
+                                    "password=" + DatabaseConstants.DATABASE_PASSWORD + "";
+
+            var connection = new MySqlConnection(connectionURL);
+           
             connection.Open();
             return connection;
+        }
+
+        public static void AddArrayParameters<T>(MySqlCommand cmd, string paramNameRoot, IEnumerable<T> values, MySqlDbType? dbType = null, int? size = null)
+        {
+            var parameterNames = new List<string>();
+            var paramNumber = 1;
+            foreach (var value in values)
+            {
+                var paramName = string.Format("@{0}{1}", paramNameRoot, paramNumber++);
+                parameterNames.Add(paramName);
+                MySqlParameter p = new MySqlParameter(paramName, value);
+                if (dbType.HasValue)
+                    p.MySqlDbType = dbType.Value;
+                if (size.HasValue)
+                    p.Size = size.Value;
+                cmd.Parameters.Add(p);
+            }
+
+            cmd.CommandText = cmd.CommandText.Replace("{" + paramNameRoot + "}", string.Join(",", parameterNames));
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace CalHFAWebAPI.Controllers
 {
@@ -23,46 +24,30 @@ namespace CalHFAWebAPI.Controllers
             type ??= LoanType.BOTH;
             preCloseStatusCodes = preCloseStatusCodes.Any() ? preCloseStatusCodes : (type == LoanType.BOTH ? new List<int>(new int[] { 410, 422 }) : type == LoanType.PRE_CLOSING ? new List<int>(new int[] { 410, 422 }) : new List<int>());
             postCloseStatusCodes = postCloseStatusCodes.Any() ? postCloseStatusCodes : (type == LoanType.BOTH ? new List<int>(new int[] { 510, 522 }) : type == LoanType.POST_CLOSING ? new List<int>(new int[] { 510, 522 }) : new List<int>());
-            
+
             var StatusCodes = new SortedDictionary<int, int>();
             var StatusDates = new Dictionary<int, DateTime>();
 
-            String statuscodes = "";
-
-            foreach (int code in preCloseStatusCodes)
-            {
-                statuscodes += code;
-                statuscodes += ", ";
-            }
-
-            foreach (int code in postCloseStatusCodes)
-            {
-                statuscodes += code;
-                statuscodes += ", ";
-            }
-
-            if (statuscodes.Length <= 0)
-                return BadRequest();
-
-            statuscodes = statuscodes.Remove(statuscodes.Length - 2);
+            if (preCloseStatusCodes.Count <= 0 && postCloseStatusCodes.Count <= 0)
+                return BadRequest("No Status Codes specified.");
 
             String queryText = "SELECT mx.StatusCode, mx.StatusDate " +
                                 "FROM(SELECT loanstatus.*, row_number() OVER(PARTITION BY loanID ORDER BY StatusSequence DESC) num FROM loanstatus) mx " +
                                     "INNER JOIN loan AS lon ON lon.LoanID = mx.LoanID " +
                                     "INNER JOIN loantype AS lt ON lon.LoanTypeID = lt.LoanTypeID " +
-                                "WHERE num = 1 AND mx.StatusCode IN("+ statuscodes + ") " +
-                                    "AND (lt.LoanCategoryID = case when mx.StatusCode > 500 then 2 ELSE 1 END) ORDER BY mx.StatusCode";
-
-            Debug.WriteLine(queryText);
+                                "WHERE num = 1 AND mx.StatusCode IN({StatusCodes}) " +
+                                    "AND (lt.LoanCategoryID = case when mx.StatusCode > 500 then 2 ELSE 1 END)";
 
             using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
                 using (MySqlCommand query = new MySqlCommand(queryText, connection))
                 {
+                    DatabaseConnection.AddArrayParameters(query, "StatusCodes", preCloseStatusCodes.Concat(postCloseStatusCodes));
+                    
                     MySqlDataReader results = query.ExecuteReader();
 
                     if (!results.HasRows)
-                        return BadRequest();
+                        return BadRequest("No loans for given Status Codes: " + preCloseStatusCodes.Concat(postCloseStatusCodes));
 
                     while (results.Read())
                     {

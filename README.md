@@ -45,6 +45,14 @@ With clients input the program can search for the data they are looking for.
 Then it should be able to display the data in an easy to read way for the clients use.
 It should also be able to display an error code if something went wrong or if the client entered invalid search parameters.
 
+## Deployment
+
+### Testing With Better Dragon's Test Data
+The code can be forked from this GitHub and tested on local environments connecting to our database. CalHFA can use this to test to make sure the code works before using live SQL server data.
+
+### Switching From Our Data To Live Data
+Once tested if wanted, changing the database connection values in /constants/DatabaseConstants.cs will allow redirection to the live SQL Server. Code may need to be altered to allow connection to SQL Server.
+
 
 ## Authors
 
