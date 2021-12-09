@@ -47,7 +47,7 @@ namespace CalHFAWebAPI.Controllers
                     MySqlDataReader results = query.ExecuteReader();
 
                     if (!results.HasRows)
-                        return BadRequest("No loans for given Status Codes: " + preCloseStatusCodes.Concat(postCloseStatusCodes));
+                        return BadRequest("No loans for given Status Code(s): " + String.Join(",", preCloseStatusCodes.Concat(postCloseStatusCodes)));
 
                     while (results.Read())
                     {
