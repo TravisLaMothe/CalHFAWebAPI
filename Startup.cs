@@ -58,10 +58,10 @@ namespace CalHFAWebAPI
             app.UseSwagger();
             app.UseSwaggerUI();
 
-/*            app.UseDefaultFiles(new DefaultFilesOptions()
+            app.UseDefaultFiles(new DefaultFilesOptions()
             {
                 DefaultFileNames = new List<string>() { "Test.html" }
-            });*/
+            });
             app.UseStaticFiles();
 
             app.UseHttpsRedirection(); // Added
