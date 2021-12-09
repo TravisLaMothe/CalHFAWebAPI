@@ -51,7 +51,7 @@ It should also be able to display an error code if something went wrong or if th
 The code can be forked from this GitHub and tested on local environments connecting to our database. CalHFA can use this to test to make sure the code works before using live SQL server data.
 
 ### Switching From Our Data To Live Data
-Once tested if wanted, changing the database connection values in /constants/DatabaseConstants.cs will allow redirection to the live SQL Server. Code may need to be altered to allow connection to SQL Server.
+To switch from MySQL to SQLServer, chang the database connection values in /constants/DatabaseConstants.cs under the SQLSERVER_ prefix. Set USE_MYSQL to false in the same file.
 
 ### Example of API Consumption
             $.getJSON('https://calhfaapi.azurewebsites.net/api/closingloans', function(data) {
@@ -69,9 +69,9 @@ Once tested if wanted, changing the database connection values in /constants/Dat
 ## Authors
 
 * Team Lead [Joseph B](https://github.com/Joemeister52)
-* Meeting Organizer [Carlena S](https://github.com/carlenacodes)
-* Front End Subject Expert [Travis L](https://github.com/TravisLaMothe)
+* Project Manager [Carlena S](https://github.com/carlenacodes)
+* Programming Lead [Travis L](https://github.com/TravisLaMothe)
 * Project Auditor [Tim C](https://github.com/Timmay21)
-* Lead Researcher [Elijah G](https://github.com/elijahg731)
 * Software Engineer [Tim H](https://github.com/thuang0)
-* Lead Diagram Design [Bryant G](https://github.com/Bryant89)
+* Software Engineer [Bryant G](https://github.com/Bryant89)
+* ~~Lead Researcher [Elijah G](https://github.com/elijahg731)~~ Left group as he moved states

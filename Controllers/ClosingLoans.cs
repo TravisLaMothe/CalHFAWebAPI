@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CalHFAWebAPI.Constants;
+using CalHFAWebAPI.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using MySqlConnector;
 using Newtonsoft.Json;
@@ -6,12 +8,12 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 
 namespace CalHFAWebAPI.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class ClosingLoans : ControllerBase
@@ -25,6 +27,24 @@ namespace CalHFAWebAPI.Controllers
             _memoryCache = memoryCache;
         }
 
+        /// <summary>
+        ///     <para>
+        ///         The HttpGet request of the API. Accepts conditional parameters based on the request URL. <paramref name="type"/>, <paramref name="preCloseStatusCodes"/>, and <paramref name="postCloseStatusCodes"/> are all
+        ///         optional parameters. Default values included in documentation. This API call will pull requested status codes and check if they are in line or not. Compares pre-closing loans to First category status and 
+        ///         post-closing loans to Subordinate category status. Also calculates the count and most recent date of the loans per status code for review.
+        ///     </para>
+        /// </summary>
+        /// 
+        /// <param name="type">Type of StatusCode requested. Options: <see cref="LoanType"/>. Default value: <see cref="LoanType.BOTH"/>  </param>
+        /// <param name="preCloseStatusCodes">List of pre-close status codes. Defaults provided by client: 410, 422</param>
+        /// <param name="postCloseStatusCodes">List of post-close status codes. Defaults provided by client: 510, 522</param>
+        /// 
+        /// <returns>
+        ///     Returns a JsonResult carrying the HttpResponseCode as well as the Json formatted output.
+        /// </returns>
+        /// <exception cref="BadRequest">
+        ///     Error thrown upon different actions occuring. For example, no loans in a status code will throw HttpCode 400 with a message informing the missing value.
+        /// </exception>
         [HttpGet]
         public IActionResult Get([FromQuery] LoanType? type, [FromQuery] List<int> preCloseStatusCodes, [FromQuery] List<int> postCloseStatusCodes)
         {
@@ -50,13 +70,13 @@ namespace CalHFAWebAPI.Controllers
                                     "WHERE num = 1 AND mx.StatusCode IN({StatusCodes}) " +
                                         "AND (lt.LoanCategoryID = case when mx.StatusCode > 500 then 2 ELSE 1 END)";
 
-                using (MySqlConnection connection = DatabaseConnection.GetConnection())
+                using (dynamic connection = DatabaseConstants.USE_MYSQL ? MySQLConnection.GetConnection() : SQLServerConnection.GetConnection())
                 {
-                    using (MySqlCommand query = new MySqlCommand(queryText, connection))
+                    using (dynamic query = DatabaseConstants.USE_MYSQL ? new MySqlCommand(queryText, connection) : new SqlCommand(queryText, connection))
                     {
-                        DatabaseConnection.AddArrayParameters(query, "StatusCodes", preCloseStatusCodes.Concat(postCloseStatusCodes));
+                        AddArrayParameters(query, "StatusCodes", preCloseStatusCodes.Concat(postCloseStatusCodes));
 
-                        MySqlDataReader results = query.ExecuteReader();
+                        dynamic results = query.ExecuteReader();
 
                         if (!results.HasRows)
                             return BadRequest("No loans for given Status Code(s): " + String.Join(",", preCloseStatusCodes.Concat(postCloseStatusCodes)));
@@ -105,6 +125,21 @@ namespace CalHFAWebAPI.Controllers
             json.ContentType = "application/json";
 
             return json;
+        }
+
+        private void AddArrayParameters<T>(dynamic cmd, string paramNameRoot, IEnumerable<T> values)
+        {
+            var parameterNames = new List<string>();
+            var paramNumber = 1;
+            foreach (var value in values)
+            {
+                var paramName = string.Format("@{0}{1}", paramNameRoot, paramNumber++);
+                parameterNames.Add(paramName);
+                dynamic p = DatabaseConstants.USE_MYSQL ? new MySqlParameter(paramName, value) : new SqlParameter(paramName, value);
+                cmd.Parameters.Add(p);
+            }
+
+            cmd.CommandText = cmd.CommandText.Replace("{" + paramNameRoot + "}", string.Join(",", parameterNames));
         }
     }
 
