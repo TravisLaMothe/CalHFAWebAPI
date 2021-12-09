@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using CalHFAWebAPI.Controllers;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -20,7 +22,14 @@ namespace CalHFAWebAPI
         [TestMethod]
         public void ClosingLoansDefaultTest()
         {
-            var controller = new ClosingLoans();  
+            var services = new ServiceCollection();
+            services.AddMemoryCache();
+            var serviceProvider = services.BuildServiceProvider();
+
+            var memoryCache = serviceProvider.GetService<IMemoryCache>();
+
+            var controller = new ClosingLoans(memoryCache);  
+
             var response = controller.Get(LoanType.BOTH, new List<int> { 410, 422 }, new List<int> { 510, 522 });
             Assert.IsNotNull(response);
 
