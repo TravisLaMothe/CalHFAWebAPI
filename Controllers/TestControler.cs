@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 
@@ -14,7 +11,7 @@ namespace CalHFAWebAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class ClosingLoans : ControllerBase
+    public class TestController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get([FromQuery] LoanType? type, [FromQuery] List<int> preCloseStatusCodes, [FromQuery] List<int> postCloseStatusCodes)
@@ -27,33 +24,31 @@ namespace CalHFAWebAPI.Controllers
             var StatusCodes = new SortedDictionary<int, int>();
             var StatusDates = new Dictionary<int, DateTime>();
 
-            String statuscodes = "";
+            List<String> statuscodes = new List<String>(preCloseStatusCodes.Count + postCloseStatusCodes.Count);
 
             foreach (int code in preCloseStatusCodes)
             {
-                statuscodes += code;
-                statuscodes += ", ";
+                statuscodes.Add("" + code);
+                statuscodes.Add(", ");
             }
 
             foreach (int code in postCloseStatusCodes)
             {
-                statuscodes += code;
-                statuscodes += ", ";
+                statuscodes.Add("" + code);
+                statuscodes.Add(", ");
             }
 
-            if (statuscodes.Length <= 0)
+            if (statuscodes.Count <= 0)
                 return BadRequest();
 
-            statuscodes = statuscodes.Remove(statuscodes.Length - 2);
+            statuscodes.RemoveAt(statuscodes.Count - 1);
 
             String queryText = "SELECT mx.StatusCode, mx.StatusDate " +
                                 "FROM(SELECT loanstatus.*, row_number() OVER(PARTITION BY loanID ORDER BY StatusSequence DESC) num FROM loanstatus) mx " +
                                     "INNER JOIN loan AS lon ON lon.LoanID = mx.LoanID " +
                                     "INNER JOIN loantype AS lt ON lon.LoanTypeID = lt.LoanTypeID " +
-                                "WHERE num = 1 AND mx.StatusCode IN("+ statuscodes + ") " +
+                                "WHERE num = 1 AND mx.StatusCode IN("+ statuscodes.ToArray() + ") " +
                                     "AND (lt.LoanCategoryID = case when mx.StatusCode > 500 then 2 ELSE 1 END) ORDER BY mx.StatusCode";
-
-            Debug.WriteLine(queryText);
 
             using (MySqlConnection connection = DatabaseConnection.GetConnection())
             {
@@ -102,12 +97,5 @@ namespace CalHFAWebAPI.Controllers
 
         }
     }
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum LoanType
-    {
-        PRE_CLOSING,
-        POST_CLOSING,
-        BOTH
-    }
 }
+*/
