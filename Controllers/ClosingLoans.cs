@@ -19,7 +19,7 @@ namespace CalHFAWebAPI.Controllers
     public class ClosingLoans : ControllerBase
     {
         private const int CacheAbsoluteExpiration = 60; // In Minutes - Time from creation of cache before releasing cached data and pulling new data from database
-        private const int CacheSlidingExpiration = 10;  // In Minutes - Time between client hits before releasing cached data
+        private const int CacheSlidingExpiration = 10;  // In Minutes - Max time between client hits before releasing cached data
 
         private readonly IMemoryCache _memoryCache;
         public ClosingLoans(IMemoryCache memoryCache)
